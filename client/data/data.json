@@ -1,0 +1,127 @@
+{
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      id: "BAUMOGD.8661385",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          16.425778426655313,
+          48.1606678934254
+        ]
+      },
+      geometry_name: "SHAPE",
+      properties: {
+        BAUMNUMMER: "29 ",
+        GEBIET: "Kindertagesheim",
+        STRASSE: "11., Wilhelm Kress Platz, KTH",
+        ART: "Populus nigra (Schwarzpappel)",
+        PFLANZJAHR: 0,
+        STAMMUMFANG: 231,
+        KRONENDURCHMESSER: 10,
+        BAUMHOEHE: 24
+      }
+    },
+    {
+      type: "Feature",
+      id: "BAUMOGD.8661386",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          16.42567323384292,
+          48.1607785030158
+        ]
+      },
+      geometry_name: "SHAPE",
+      properties: {
+        BAUMNUMMER: null,
+        GEBIET: null,
+        STRASSE: null,
+        ART: null,
+        PFLANZJAHR: null,
+        STAMMUMFANG: null,
+        KRONENDURCHMESSER: null,
+        BAUMHOEHE: null
+      }
+    },
+    {
+      type: "Feature",
+      id: "BAUMOGD.8661387",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          16.3684330281751,
+          48.14620487933285
+        ]
+      },
+      geometry_name: "SHAPE",
+      properties: {
+        BAUMNUMMER: "2060 ",
+        GEBIET: "Strassen",
+        STRASSE: "Oberlaaer Strasse",
+        ART: " ",
+        PFLANZJAHR: 0,
+        STAMMUMFANG: 0,
+        KRONENDURCHMESSER: 0,
+        BAUMHOEHE: 0
+      }
+    },
+    {
+      type: "Feature",
+      id: "BAUMOGD.8661388",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          16.42574180556778,
+          48.160634107188315
+        ]
+      },
+      geometry_name: "SHAPE",
+      properties: {
+        BAUMNUMMER: "31 ",
+        GEBIET: "Kindertagesheim",
+        STRASSE: "11., Wilhelm Kress Platz, KTH",
+        ART: "Populus nigra (Schwarzpappel)",
+        PFLANZJAHR: 0,
+        STAMMUMFANG: 210,
+        KRONENDURCHMESSER: 12,
+        BAUMHOEHE: 21
+      }
+    },
+    {
+      type: "Feature",
+      id: "BAUMOGD.8661389",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          16.367795887309743,
+          48.146367026249386
+        ]
+      },
+      geometry_name: "SHAPE",
+      properties: {
+        BAUMNUMMER: "2062 ",
+        GEBIET: "Strassen",
+        STRASSE: "Oberlaaer Strasse",
+        ART: " ",
+        PFLANZJAHR: 0,
+        STAMMUMFANG: 0,
+        KRONENDURCHMESSER: 0,
+        BAUMHOEHE: 0
+      }
+    }
+  ],
+  crs: {
+    type: "EPSG",
+    properties: {
+      code: "4326"
+    }
+  },
+  bbox: [
+    16.367795887309743,
+    48.14620487933285,
+    16.425778426655313,
+    48.1607785030158
+  ]
+}
