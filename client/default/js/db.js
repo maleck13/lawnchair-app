@@ -57,7 +57,8 @@ $('document').ready(function (){
     var keyName = "mykey";
     //file is .5MB * amount by 2
     var l = new Lawnchair(function (){
-      console.log(this);
+      console.log(this.adapter);
+      alert(this.adapter);
       console.log("in lawnchair");
     var db = this;
 
