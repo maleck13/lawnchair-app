@@ -6,7 +6,7 @@ function getData(cb){
 $('document').ready(function (){
 
   $(this).on("completed", function (data){
-     console.log("completed called", data);
+     console.log("completed called" + JSON.stringify(data));
     setTimeout(function(){
       data.mb = (data.mb > 1) ? Math.round(data.mb) : data.mb;
      $('.table-striped').append("<tr><td>"+data.key+"</td><td>"+data.size+"</td><td>   "+data.elapsed+"   </td><td>"+data.mb+"</td></tr>");
