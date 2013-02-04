@@ -57,6 +57,7 @@ $('document').ready(function (){
     var keyName = "mykey";
     //file is .5MB * amount by 2
     var l = new Lawnchair(function (){
+      console.log(this);
       console.log("in lawnchair");
     var db = this;
 
@@ -68,7 +69,8 @@ $('document').ready(function (){
        var calcAmount = amount * 2;
        series.push(function (callback){
          console.log("executing " + amount);
-         db.remove(keyName, function (){
+        try{
+
            getData(function (d){
              var content=[];
              for(var i=calcAmount; i > 0; i--){
@@ -89,7 +91,10 @@ $('document').ready(function (){
                callback(undefined, {"length":length, "db":db});
              });
            });
-         });
+
+       }catch(e){
+          console.log("Caught e ",e);
+        }
        });
     });
 
