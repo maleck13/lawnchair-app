@@ -15,34 +15,50 @@ $('document').ready(function (){
   });
 
   var doc = $(this);
-
+  var retdata = {};
   $('#addData').unbind().click(function(){
     var amount = $('input[name="amount"]').val();
     //file is .5MB * amount by 2
-    amount = amount * 2;
 
-    getData(function (data){
+    var dataString="";
+    //create Kilobyte string
+    for(var k=1023; k > 0; k--){
+      dataString+="s";
+    }
+    dataString+="\n";
+    var mbString="";
+    //create MB string
+    for(var j=1024; j > 0; j--){
+      if(!mbString){
+        mbString = dataString;
+      }else{
+        mbString+=dataString;
+      }
+    }
+
       var c = new Lawnchair(function (){
+        var db = this;
         for(var i=amount; i >0; i--){
-          var stData = JSON.stringify(data);
-
-          this.save({key:"test" + i,val:stData}, function (obj){
-            var size = stData.getBytes();
-            var mb = size / 1048576;
-            doc.trigger({type:"completed","key":"test"+ i, "elapsed":"",size:size,"mb":mb});
+          var key = "test"+i;
+          this.save({key:key + i,val:mbString}, function (obj){
+            var size = mbString.getBytes();
+            var mb = (size / 1024)/1024;
+            doc.trigger({type:"completed","key":obj.key, "elapsed":"",size:size,"mb":mb});
+            db.get(obj.key, function (data){
+              if(data.val){
+                console.log("retrieved data from key  "+ data.key + " "+ data.val.getBytes());
+                retdata[data.key] = data.val;
+                console.log("recieve size = " + (JSON.stringify(retdata).getBytes()/ 1024)/1024);
+              }else{
+                console.log("did not receive data");
+              }
+            });
           });
-        }
-        //get the last key saved
-        this.get("test" + amount, function (data){
-          if(data.data){
-            alert("retrieved data from key " + "test" + amount);
-          }else{
-            alert("did not receive data");
-          }
-        });
-      });
 
-    });
+        //get the last key saved
+
+        }
+      });
 
   });
 

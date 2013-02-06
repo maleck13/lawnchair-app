@@ -87,6 +87,7 @@ Lawnchair.adapter('localFileStorage', (function () {
 
     get : function (key, callback){
       filenameForKey(key, function(hash) {
+        console.log("GET file name = " + hash);
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
           fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
             fileEntry.file(function gotFile(file) {
