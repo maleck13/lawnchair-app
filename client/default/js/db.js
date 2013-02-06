@@ -57,7 +57,7 @@ $('document').ready(function (){
     var l = new Lawnchair(function (){
       $('#adapter').html(this.adapter);
       var db = this;
-      var amounts = [5,6, 7];
+      var amounts = [2,4];
       var series = [];
       var dataString="";
       //create Kilobyte string
@@ -65,10 +65,14 @@ $('document').ready(function (){
         dataString+="s";
       }
       dataString+="\n";
-      var mbString=null;
+      var mbString="";
       //create MB string
       for(var j=1024; j > 0; j--){
-        mbString+=dataString;
+        if(!mbString){
+          mbString = dataString;
+        }else{
+         mbString+=dataString;
+        }
       }
 
       console.log("data string size is ", mbString.getBytes() + " bytes");
@@ -80,7 +84,11 @@ $('document').ready(function (){
           try{
             var command = {val:null,key:keyName};
             for(var i=amount; i > 0; i--){
-              command.val+=mbString;
+              if(!command.val){
+                command.val = mbString;
+              }else{
+               command.val+=mbString;
+              }
             }
             var length = command.val.length;
             var size = command.val.getBytes();
@@ -114,11 +122,14 @@ $('document').ready(function (){
   $('#getData').click(function(){
 
       Lawnchair(function (){
+        var start = new Date().getTime();
         this.get("mykey", function (data, err){
+          var end = new Date().getTime();
+          var elapsed = end - start;
           var size = data.val.length;
           var mb = Math.round((size / 1024 ) / 1024);
           console.log((data.val.length / 1024 ) / 1024 );
-          $('.table-striped').append("<tr><td>"+data.key+"</td><td>"+size+"</td><td></td><td>"+mb+"</td></tr>");
+          $('.table-striped').append("<tr><td>"+data.key+"</td><td>"+size+"</td><td>"+elapsed+"</td><td>"+mb+"</td><td>"+data.val.substr(0,100)+"</td></tr>");
         });
       });
   });

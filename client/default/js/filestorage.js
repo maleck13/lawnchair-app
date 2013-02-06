@@ -4,12 +4,8 @@ Lawnchair.adapter('localFileStorage', (function () {
 
 
   function filenameForKey(key, cb) {
-    key = ($fh) ? $fh.app_props.appid + key : "localFileStorage"+key;
-    if(! $fh ){
-      $fh = {"hash": function (ob, suc){
-         return suc(ob.text);
-      }};
-    }
+    key = $fh.app_props.appid + key;
+
     $fh.hash({
       algorithm: "MD5",
       text: key
@@ -58,17 +54,20 @@ Lawnchair.adapter('localFileStorage', (function () {
       var key = obj.key;
       filenameForKey(key, function(hash) {
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+          console.log("WRITE: got file system 1");
           fileSystem.root.getFile(hash, {
             create: true
           }, function gotFileEntry(fileEntry) {
+            console.log("WRITE: got file entry 2");
             fileEntry.createWriter(function gotFileWriter(writer) {
-              writer.onwriteend = function (){
-                callback(obj.val);
+              console.log("WRITE: got file writer 3");
+              writer.onwrite = function() {
+                console.log("WRITE: write done 4");
+                return callback({
+                  key: key,
+                  val: obj.val
+                });
               };
-              writer.onwrite = function(bytesWritten) {
-                console.log("FILESTORAGE  writing 50", bytesWritten );
-              };
-              //split the string into 1MB chunks
               writer.write(obj.val);
             }, function() {
               fail('[save] Failed to create file writer');
@@ -138,7 +137,7 @@ Lawnchair.adapter('localFileStorage', (function () {
     },
 
     all : function (callback){
-
+      throw "Currently not supported";
     },
 
     remove : function (key, callback){
@@ -166,7 +165,7 @@ Lawnchair.adapter('localFileStorage', (function () {
     },
 
     nuke : function (callback){
-
+      throw "Currently not supported";
     }
 
 
