@@ -38,7 +38,7 @@ Lawnchair.adapter('localFileStorage', (function () {
 
   return {
 
-    valid: function () { return !!(window.requestFileSystem && navigator && navigator.externalstorage) },
+    valid: function () { return !!(window.requestFileSystem) },
 
     init : function (options, callback){
       //calls the parent function fn and applies this scope
