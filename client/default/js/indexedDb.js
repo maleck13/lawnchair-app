@@ -1,13 +1,6 @@
-/**
- * indexed db adapter
- * ===
- * - originally authored by Vivian Li
- *
- */
-
 Lawnchair.adapter('indexed-db', (function(){
 
-  function fail(e, i) { console.log('error in indexed-db adapter!', e, i); debugger; } ;
+  function fail(e, i) { console.log('error in indexed-db adapter!' + e.message, e, i); debugger; } ;
 
   function getIDB(){
     return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
@@ -22,28 +15,42 @@ Lawnchair.adapter('indexed-db', (function(){
     init:function(options, callback) {
       this.idb = getIDB();
       this.waiting = [];
-      var request = this.idb.open(this.name);
+      var request = this.idb.open(this.name, "2.0");
       var self = this;
       var cb = self.fn(self.name, callback);
       var win = function(){ return cb.call(self, self); }
 
+      request.onupgradeneeded = function(event){
+        self.store = request.result.createObjectStore("teststore", { autoIncrement: true} );
+        for (var i = 0; i < self.waiting.length; i++) {
+          self.waiting[i].call(self);
+        }
+        self.waiting = [];
+        win();
+      }
+
       request.onsuccess = function(event) {
         self.db = request.result;
 
-        if(self.db.version != "1.0") {
-          var setVrequest = self.db.setVersion("1.0");
-          // onsuccess is the only place we can create Object Stores
-          setVrequest.onsuccess = function(e) {
-            self.store = self.db.createObjectStore("teststore", { autoIncrement: true} );
-            for (var i = 0; i < self.waiting.length; i++) {
-              self.waiting[i].call(self);
+
+        if(self.db.version != "2.0") {
+          if(typeof self.db.setVersion == 'function'){
+
+            var setVrequest = self.db.setVersion("2.0");
+            // onsuccess is the only place we can create Object Stores
+            setVrequest.onsuccess = function(e) {
+              self.store = self.db.createObjectStore("teststore", { autoIncrement: true} );
+              for (var i = 0; i < self.waiting.length; i++) {
+                self.waiting[i].call(self);
+              }
+              self.waiting = [];
+              win();
+            };
+            setVrequest.onerror = function(e) {
+              console.log("Failed to create objectstore " + e);
+              fail(e);
             }
-            self.waiting = [];
-            win();
-          };
-          setVrequest.onerror = function(e) {
-            console.log("Failed to create objectstore " + e);
-            fail(e);
+
           }
         } else {
           self.store = {};
@@ -67,8 +74,9 @@ Lawnchair.adapter('indexed-db', (function(){
 
       var self = this;
       var win  = function (e) { if (callback) { obj.key = e.target.result; self.lambda(callback).call(self, obj) }};
-
-      var trans = this.db.transaction(["teststore"], "readwrite");
+      var accessType = "readwrite";
+      console.log(accessType);
+      var trans = this.db.transaction(["teststore"],accessType);
       var store = trans.objectStore("teststore");
       var request = obj.key ? store.put(obj, obj.key) : store.put(obj);
 
@@ -126,7 +134,7 @@ Lawnchair.adapter('indexed-db', (function(){
           fail(event);
         };
 
-        // FIXME: again the setInterval solution to async callbacks..    
+        // FIXME: again the setInterval solution to async callbacks..
       } else {
 
         // note: these are hosted.
@@ -210,7 +218,7 @@ Lawnchair.adapter('indexed-db', (function(){
 
       try {
         this.db
-          .transaction(["teststore"], webkitIDBTransaction.READ_WRITE)
+          .transaction(["teststore"], "readwrite")
           .objectStore("teststore").clear().onsuccess = win;
 
       } catch(e) {
