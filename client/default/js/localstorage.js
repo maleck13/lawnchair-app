@@ -1,3 +1,14 @@
+/**
+ * dom storage adapter
+ * ===
+ * - originally authored by Joseph Pecoraro
+ *
+ */
+//
+// TODO does it make sense to be chainable all over the place?
+// chainable: nuke, remove, all, get, save, all    
+// not chainable: valid, keys
+//
 Lawnchair.adapter('dom', (function() {
   var storage = window.localStorage
   // the indexer is an encapsulation of the helpers needed to keep an ordered index of the keys
@@ -45,7 +56,19 @@ Lawnchair.adapter('dom', (function() {
 
     // ensure we are in an env with localStorage
     valid: function () {
-      return !!storage
+      return !!storage && function() {
+        // in mobile safari if safe browsing is enabled, window.storage
+        // is defined but setItem calls throw exceptions.
+        var success = true
+        var value = Math.random()
+        try {
+          storage.setItem(value, value)
+        } catch (e) {
+          success = false
+        }
+        storage.removeItem(value)
+        return success
+      }()
     },
 
     init: function (options, callback) {
@@ -55,11 +78,11 @@ Lawnchair.adapter('dom', (function() {
 
     save: function (obj, callback) {
       var key = obj.key ? this.name + '.' + obj.key : this.name + '.' + this.uuid()
-      // if the key is not in the index push it on
-      if (this.indexer.find(key) === false) this.indexer.add(key)
       // now we kil the key and use it in the store colleciton
       delete obj.key;
       storage.setItem(key, JSON.stringify(obj))
+      // if the key is not in the index push it on
+      if (this.indexer.find(key) === false) this.indexer.add(key)
       obj.key = key.slice(this.name.length + 1)
       if (callback) {
         this.lambda(callback).call(this, obj)
@@ -83,7 +106,16 @@ Lawnchair.adapter('dom', (function() {
     keys: function(callback) {
       if (callback) {
         var name = this.name
-          ,   keys = this.indexer.all().map(function(r){ return r.replace(name + '.', '') })
+        var indices = this.indexer.all();
+        var keys = [];
+        //Checking for the support of map.
+        if(Array.prototype.map) {
+          keys = indices.map(function(r){ return r.replace(name + '.', '') })
+        } else {
+          for (var key in indices) {
+            keys.push(key.replace(name + '.', ''));
+          }
+        }
         this.fn('keys', callback).call(this, keys)
       }
       return this // TODO options for limit/offset, return promise
@@ -98,20 +130,16 @@ Lawnchair.adapter('dom', (function() {
           if (obj) {
             obj = JSON.parse(obj)
             obj.key = key[i]
-            r.push(obj)
           }
+          r.push(obj)
         }
         if (callback) this.lambda(callback).call(this, r)
       } else {
-        var k =  key
+        var k = this.name + '.' + key
         var  obj = storage.getItem(k)
         if (obj) {
-          try{
-          var jsonVal = JSON.parse(obj);
-          jsonVal.key = key
-          }catch(e){
-
-          }
+          obj = JSON.parse(obj)
+          obj.key = key
         }
         if (callback) this.lambda(callback).call(this, obj)
       }
@@ -140,8 +168,25 @@ Lawnchair.adapter('dom', (function() {
       return this
     },
 
-    remove: function (keyOrObj, callback) {
-      var key = this.name + '.' + ((keyOrObj.key) ? keyOrObj.key : keyOrObj)
+    remove: function (keyOrArray, callback) {
+      var self = this;
+      if (this.isArray(keyOrArray)) {
+        // batch remove
+        var i, done = keyOrArray.length;
+        var removeOne = function(i) {
+          self.remove(keyOrArray[i], function() {
+            if ((--done) > 0) { return; }
+            if (callback) {
+              self.lambda(callback).call(self);
+            }
+          });
+        };
+        for (i=0; i < keyOrArray.length; i++)
+          removeOne(i);
+        return this;
+      }
+      var key = this.name + '.' +
+        ((keyOrArray.key) ? keyOrArray.key : keyOrArray)
       this.indexer.del(key)
       storage.removeItem(key)
       if (callback) this.lambda(callback).call(this)
