@@ -1,4 +1,4 @@
-
+console = (console) ? console : {"log":function (){}};
 function getData(cb){
   return $.getJSON("data/data.json",cb);
 }
