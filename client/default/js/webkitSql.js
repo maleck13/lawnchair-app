@@ -29,7 +29,11 @@ Lawnchair.adapter('webkit-sqlite', (function () {
         ,   create = "CREATE TABLE IF NOT EXISTS " + this.name + " (id NVARCHAR(32) UNIQUE PRIMARY KEY, value TEXT, timestamp REAL)"
         ,   win    = function(){ return cb.call(that, that); }
       // open a connection and create the db if it doesn't exist
-      this.db = openDatabase(this.name, '1.0.0', this.name, 65536)
+      //fh change for bigger db and optional failure function
+      if(options && 'function' === typeof options.fail)fail = options.fail;
+      var sizeInBytes = (1024 * 1024) * 10;  //10MB
+      //end changes
+      this.db = openDatabase(this.name, '1.0.0', this.name, sizeInBytes);
       this.db.transaction(function (t) {
         t.executeSql(create, [], win, fail)
       })

@@ -42,7 +42,7 @@ Lawnchair.adapter('localFileStorage', (function () {
 
     init : function (options, callback){
       //calls the parent function fn and applies this scope
-      if(options.fail) fail = options.fail;
+      if(options && 'function' === typeof options.fail ) fail = options.fail;
       if (callback) this.fn(this.name, callback).call(this, this);
     },
 

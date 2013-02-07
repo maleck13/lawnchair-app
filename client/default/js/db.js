@@ -70,10 +70,12 @@ $('document').ready(function (){
   $('#addKeyData').unbind().click(function (){
     var amount = $('input[name="amount"]').val();
     var keyName = "mykey";
-    var l = new Lawnchair(function (){
+    var l = new Lawnchair({fail:function(err){
+      console.log("called error function " + err);
+    }},function (){
       $('#adapter').html(this.adapter);
       var db = this;
-      var amounts = [2,4];
+      var amounts = [2,4,10];
       var series = [];
       var dataString="";
       //create Kilobyte string
@@ -134,6 +136,16 @@ $('document').ready(function (){
       });
     });
   });
+
+  $('#removeData').unbind().click(function (){
+    var keyname = $('input[name="keyname"]').val();
+    Lawnchair(function (){
+       this.remove(keyname, function (){
+          console.log("Removed");
+       });
+    });
+  });
+
 
   $('#getData').click(function(){
 
